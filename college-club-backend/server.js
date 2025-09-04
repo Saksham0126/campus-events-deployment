@@ -11,7 +11,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 // CORS configuration for production
 const corsOptions = {
     origin: NODE_ENV === 'production' 
-        ? [process.env.FRONTEND_URL, 'https://your-frontend-domain.vercel.app'] // Add your actual frontend URL
+        ? [process.env.FRONTEND_URL, 'https://campus-events-deployment.vercel.app'] // Updated for your deployment
         : ['http://localhost:3000', 'http://localhost:5000', 'http://127.0.0.1:5500'],
     credentials: true,
     optionsSuccessStatus: 200

@@ -5,8 +5,8 @@ const config = {
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             return 'http://localhost:3000';
         } else {
-            // Production API URL - update this with your actual Railway URL
-            return 'https://your-backend-domain.railway.app';
+            // Production API URL - will be updated after Railway deployment
+            return 'https://campus-events-backend.railway.app';
         }
     })(),
     
