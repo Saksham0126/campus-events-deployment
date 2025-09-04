@@ -67,7 +67,6 @@ body::before {
     box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
     z-index: 1000;
     padding: 0.5rem 0;
-    display: flex;
     justify-content: space-around;
     align-items: center;
 }
@@ -97,6 +96,17 @@ body::before {
 .mobile-nav-item span:last-child {
     font-size: 0.75rem;
     font-weight: 500;
+}
+
+/* Desktop Navigation - Default visible */
+.desktop-nav {
+    display: block;
+}
+
+/* Mobile Navigation - Hidden by default */
+.mobile-top-bar,
+.mobile-bottom-nav {
+    display: none;
 }
 
 /* Mobile-specific container adjustments */
