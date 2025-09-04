@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Login - College Clubs Hub</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .debug-panel {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .credentials {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .test-login {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .log {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>🔧 College Clubs Debug Panel</h1>
+    
+    <div class="debug-panel">
+        <h2>Login Test Credentials</h2>
+        <div class="credentials">
+            <h3>Valid Club Login Credentials:</h3>
+            <ul>
+                <li><strong>tech-club</strong> / tech123</li>
+                <li><strong>drama-club</strong> / drama123</li>
+                <li><strong>sports-club</strong> / sports123</li>
+                <li><strong>music-club</strong> / music123</li>
+                <li><strong>debate-club</strong> / debate123</li>
+                <li><strong>photography-club</strong> / photo123</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="debug-panel">
+        <h2>Quick Login Tests</h2>
+        <div class="test-login">
+            <button onclick="testLogin('tech-club', 'tech123')">Test Tech Club Login</button>
+            <button onclick="testLogin('drama-club', 'drama123')">Test Drama Club Login</button>
+            <button onclick="testLogin('invalid', 'wrong')">Test Invalid Login</button>
+        </div>
+        
+        <div class="test-login">
+            <button onclick="checkFiles()">Check File Structure</button>
+            <button onclick="checkLocalStorage()">Check Local Storage</button>
+            <button onclick="testRedirect()">Test Redirect Logic</button>
+        </div>
+        
+        <div class="test-login">
+            <button onclick="clearSession()">Clear Session</button>
+            <button onclick="showCurrentUrl()">Show Current URL</button>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+    </div>
+
+    <div class="debug-panel">
+        <h2>Status</h2>
+        <div id="status" class="status info">Ready for testing...</div>
+    </div>
+
+    <div class="debug-panel">
+        <h2>Debug Log</h2>
+        <div id="debugLog" class="log">Debug panel loaded. Ready for testing...<br></div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/clubs.js"></script>
+    
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            
+            // Update status
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        function testLogin(clubId, password) {
+            log(`Testing login for ${clubId}...`, 'info');
+            
+            try {
+                // Check if credentials exist
+                if (!window.CLUB_CREDENTIALS) {
+                    log('ERROR: CLUB_CREDENTIALS not found', 'error');
+                    return;
+                }
+                
+                log(`Available credentials: ${Object.keys(window.CLUB_CREDENTIALS).join(', ')}`, 'info');
+                
+                // Test credentials
+                if (window.CLUB_CREDENTIALS[clubId] && window.CLUB_CREDENTIALS[clubId] === password) {
+                    log(`✅ Credentials valid for ${clubId}`, 'success');
+                    
+                    // Create session
+                    const session = {
+                        type: 'club',
+                        clubId: clubId,
+                        loginTime: Date.now(),
+                        expires: Date.now() + (24 * 60 * 60 * 1000)
+                    };
+                    
+                    localStorage.setItem('userSession', JSON.stringify(session));
+                    log(`✅ Session created for ${clubId}`, 'success');
+                    
+                    // Test redirect logic
+                    testRedirectLogic(clubId);
+                    
+                } else {
+                    log(`❌ Invalid credentials for ${clubId}`, 'error');
+                }
+            } catch (error) {
+                log(`ERROR: ${error.message}`, 'error');
+            }
+        }
+
+        function testRedirectLogic(clubId) {
+            log('Testing redirect logic...', 'info');
+            
+            try {
+                let redirectUrl;
+                const protocol = window.location.protocol;
+                log(`Current protocol: ${protocol}`, 'info');
+                log(`Current URL: ${window.location.href}`, 'info');
+                
+                if (protocol === 'file:') {
+                    const currentDir = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
+                    redirectUrl = `${currentDir}/pages/club-dashboard.html?club=${clubId}`;
+                } else {
+                    const baseUrl = window.location.origin;
+                    redirectUrl = `${baseUrl}/pages/club-dashboard.html?club=${clubId}`;
+                }
+                
+                log(`Generated redirect URL: ${redirectUrl}`, 'info');
+                
+                // Test if the file exists (this will only work for file:// protocol)
+                if (protocol === 'file:') {
+                    log('For file:// protocol, manually check if pages/club-dashboard.html exists', 'info');
+                }
+                
+                // Don't actually redirect in debug mode
+                log('✅ Redirect URL generated successfully (not redirecting in debug mode)', 'success');
+                
+            } catch (error) {
+                log(`ERROR in redirect logic: ${error.message}`, 'error');
+            }
+        }
+
+        function checkFiles() {
+            log('Checking file structure...', 'info');
+            
+            const requiredFiles = [
+                'js/auth.js',
+                'js/main.js', 
+                'js/clubs.js',
+                'js/club-dashboard.js',
+                'pages/club-dashboard.html'
+            ];
+            
+            log('Required files:', 'info');
+            requiredFiles.forEach(file => {
+                log(`  - ${file}`, 'info');
+            });
+            
+            log('Check if these files exist in your project directory', 'info');
+        }
+
+        function checkLocalStorage() {
+            log('Checking localStorage...', 'info');
+            
+            try {
+                const session = localStorage.getItem('userSession');
+                if (session) {
+                    const sessionData = JSON.parse(session);
+                    log(`Current session: ${JSON.stringify(sessionData, null, 2)}`, 'info');
+                    
+                    if (sessionData.expires > Date.now()) {
+                        log('✅ Session is valid', 'success');
+                    } else {
+                        log('❌ Session is expired', 'error');
+                    }
+                } else {
+                    log('No active session found', 'info');
+                }
+                
+                const clubs = localStorage.getItem('clubs');
+                if (clubs) {
+                    const clubsData = JSON.parse(clubs);
+                    log(`Found ${clubsData.length} clubs in storage`, 'info');
+                } else {
+                    log('No clubs data in localStorage', 'info');
+                }
+                
+            } catch (error) {
+                log(`ERROR checking localStorage: ${error.message}`, 'error');
+            }
+        }
+
+        function testRedirect() {
+            log('Testing redirect to dashboard...', 'info');
+            
+            // Check if we have a valid session first
+            const session = localStorage.getItem('userSession');
+            if (!session) {
+                log('❌ No session found. Please test login first.', 'error');
+                return;
+            }
+            
+            try {
+                const sessionData = JSON.parse(session);
+                if (sessionData.expires <= Date.now()) {
+                    log('❌ Session expired. Please test login first.', 'error');
+                    return;
+                }
+                
+                log(`Attempting redirect for ${sessionData.clubId}...`, 'info');
+                
+                if (confirm('This will redirect you to the dashboard. Continue?')) {
+                    testRedirectLogic(sessionData.clubId);
+                    
+                    // Actually redirect after 2 seconds
+                    setTimeout(() => {
+                        let redirectUrl;
+                        if (window.location.protocol === 'file:') {
+                            const currentDir = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
+                            redirectUrl = `${currentDir}/pages/club-dashboard.html?club=${sessionData.clubId}`;
+                        } else {
+                            const baseUrl = window.location.origin;
+                            redirectUrl = `${baseUrl}/pages/club-dashboard.html?club=${sessionData.clubId}`;
+                        }
+                        
+                        window.location.href = redirectUrl;
+                    }, 2000);
+                }
+                
+            } catch (error) {
+                log(`ERROR: ${error.message}`, 'error');
+            }
+        }
+
+        function clearSession() {
+            localStorage.removeItem('userSession');
+            log('✅ Session cleared', 'success');
+        }
+
+        function showCurrentUrl() {
+            log(`Current URL: ${window.location.href}`, 'info');
+            log(`Protocol: ${window.location.protocol}`, 'info');
+            log(`Host: ${window.location.host}`, 'info');
+            log(`Origin: ${window.location.origin}`, 'info');
+            log(`Pathname: ${window.location.pathname}`, 'info');
+        }
+
+        function clearLog() {
+            document.getElementById('debugLog').innerHTML = 'Log cleared...<br>';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Debug panel initialized', 'success');
+            log('Testing if auth functions are available...', 'info');
+            
+            if (typeof handleClubLogin === 'function') {
+                log('✅ handleClubLogin function found', 'success');
+            } else {
+                log('❌ handleClubLogin function NOT found', 'error');
+            }
+            
+            if (typeof CLUB_CREDENTIALS !== 'undefined') {
+                log('✅ CLUB_CREDENTIALS found', 'success');
+            } else {
+                log('❌ CLUB_CREDENTIALS NOT found', 'error');
+            }
+            
+            if (typeof ClubManager !== 'undefined') {
+                log('✅ ClubManager found', 'success');
+            } else {
+                log('❌ ClubManager NOT found', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

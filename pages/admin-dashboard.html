@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- Enhanced Viewport Settings -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="College Clubs Hub Admin Dashboard - Manage clubs, users, and content with powerful admin tools.">
+    <meta name="keywords" content="admin dashboard, club management, user management, college admin">
+    <meta name="author" content="College Clubs Hub">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Mobile Optimization -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- iOS Specific Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Admin Dashboard">
+    
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#1a1a1a">
+    <meta name="msapplication-navbutton-color" content="#1a1a1a">
+    
+    <!-- Prevent automatic phone number detection -->
+    <meta name="format-detection" content="telephone=no">
+    
+    <title>Admin Dashboard - College Clubs Hub</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="admin-dashboard">
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-container">
+            <div class="spinner-ring"></div>
+            <div class="spinner-text">Loading Dashboard...</div>
+        </div>
+    </div>
+
+    <!-- Desktop Navigation -->
+    <header class="navbar desktop-nav dashboard-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <i class="fas fa-shield-alt admin-icon"></i>
+                <div class="header-info">
+                    <h1>Admin Dashboard</h1>
+                    <span id="currentDateTime"></span>
+                </div>
+            </div>
+            
+            <div class="admin-actions">
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-count" id="notificationCount">0</span>
+                </div>
+                
+                <div class="admin-profile">
+                    <div class="admin-info">
+                        <span class="admin-name" id="adminName">Administrator</span>
+                        <span class="admin-role">System Administrator</span>
+                    </div>
+                    <div class="admin-dropdown">
+                        <button class="admin-menu-btn" id="adminMenuBtn">
+                            <i class="fas fa-user-cog"></i>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu" id="adminDropdownMenu">
+                            <a href="#" onclick="showProfileSettings()">
+                                <i class="fas fa-user-edit"></i> Profile Settings
+                            </a>
+                            <a href="#" onclick="showSystemSettings()">
+                                <i class="fas fa-cogs"></i> System Settings
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <!-- Hidden Super Admin Controls -->
+                            <div id="superAdminControls" class="super-admin-section" style="display: none;">
+                                <a href="#" onclick="showSuperAdminPanel()" class="super-admin-link">
+                                    <i class="fas fa-crown"></i> Security Panel
+                                </a>
+                                <a href="#" onclick="confirmDestroyDatabase()" class="destroy-btn">
+                                    <i class="fas fa-skull-crossbones"></i> Destroy Site
+                                </a>
+                                <div class="dropdown-divider"></div>
+                            </div>
+                            <a href="#" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Top Bar -->
+    <header class="mobile-top-bar">
+        <a href="#" class="mobile-brand">
+            <span class="brand-text">Admin Dashboard</span>
+        </a>
+        <button class="mobile-login-btn" onclick="logout()">
+            <span>🚪</span>
+        </button>
+    </header>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="#overview" class="mobile-nav-item active" onclick="showSection('overview')">
+            <span>📊</span>
+            <span>Dashboard</span>
+        </a>
+        <a href="#clubs" class="mobile-nav-item" onclick="showSection('clubs')">
+            <span>🏛️</span>
+            <span>Clubs</span>
+        </a>
+        <a href="#users" class="mobile-nav-item" onclick="showSection('users')">
+            <span>👥</span>
+            <span>Users</span>
+        </a>
+        <a href="#media" class="mobile-nav-item" onclick="showSection('media')">
+            <span>📷</span>
+            <span>Media</span>
+        </a>
+        <a href="#settings" class="mobile-nav-item" onclick="showSection('settings')">
+            <span>⚙️</span>
+            <span>Settings</span>
+        </a>
+    </nav>
+
+    <!-- Main Dashboard Content -->
+    <main class="main-content">
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <aside class="dashboard-sidebar">
+                <ul class="sidebar-menu">
+                    <li><a href="#overview" class="nav-link active" onclick="showSection('overview')">Dashboard</a></li>
+                    <li><a href="#clubs" class="nav-link" onclick="showSection('clubs')">Manage Clubs</a></li>
+                    <li><a href="#users" class="nav-link" onclick="showSection('users')">User Management</a></li>
+                    <li><a href="#media" class="nav-link" onclick="showSection('media')">Media Approval</a></li>
+                    <li><a href="#analytics" class="nav-link" onclick="showSection('analytics')">Analytics</a></li>
+                    <li><a href="#settings" class="nav-link" onclick="showSection('settings')">Settings</a></li>
+                </ul>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="dashboard-content">
+                <!-- Overview Section -->
+                <div id="overview" class="dashboard-section active">
+                    <div class="dashboard-header">
+                        <h1>Dashboard Overview</h1>
+                        <p>Welcome to the admin panel. Here's what's happening across the platform.</p>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalClubs">0</div>
+                            <div class="stat-label">Total Clubs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalUsers">0</div>
+                            <div class="stat-label">Registered Users</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="pendingApprovals">0</div>
+                            <div class="stat-label">Pending Approvals</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalMedia">0</div>
+                            <div class="stat-label">Total Media Items</div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="card">
+                        <div class="card-header">Recent Activity</div>
+                        <div class="card-body">
+                            <div id="recentActivity">
+                                <p>Loading recent activity...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card">
+                        <div class="card-header">Quick Actions</div>
+                        <div class="card-body">
+                            <div class="quick-actions" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <button class="btn btn-primary" onclick="showSection('clubs')">Manage Clubs</button>
+                                <button class="btn btn-secondary" onclick="showSection('users')">View Users</button>
+                                <button class="btn btn-outline" onclick="showSection('media')">Review Media</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clubs Management Section -->
+                <div id="clubs" class="dashboard-section">
+                    <div class="dashboard-header" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                        <div>
+                            <h1>Manage Clubs</h1>
+                            <p>View and manage all registered clubs</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="openAddClubModal()">➕ Add Club</button>
+                    </div>
+
+                    <!-- Clubs Filter -->
+                    <div class="card">
+                        <div class="card-header">Filter Clubs</div>
+                        <div class="card-body">
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <select id="clubFilter" onchange="filterClubs()">
+                                    <option value="all">All Clubs</option>
+                                    <option value="active">Active</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                                <input type="text" id="clubSearch" placeholder="Search clubs..." onkeyup="searchClubs()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clubs Table -->
+                    <div class="card">
+                        <div class="card-header">All Clubs</div>
+                        <div class="card-body">
+                            <div id="clubsTable">
+                                <p>Loading clubs...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Management Section -->
+                <div id="users" class="dashboard-section">
+                    <div class="dashboard-header">
+                        <h1>User Management</h1>
+                        <p>Manage registered users and their permissions</p>
+                    </div>
+
+                    <!-- Users Table -->
+                    <div class="card">
+                        <div class="card-header">Registered Users</div>
+                        <div class="card-body">
+                            <div id="usersTable">
+                                <p>Loading users...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Media Approval Section -->
+                <div id="media" class="dashboard-section">
+                    <div class="dashboard-header">
+                        <h1>Media Approval</h1>
+                        <p>Review and approve media uploads from clubs</p>
+                    </div>
+
+                    <!-- Pending Media -->
+                    <div class="card">
+                        <div class="card-header">Pending Approvals</div>
+                        <div class="card-body">
+                            <div id="pendingMedia">
+                                <p>Loading pending media...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div id="analytics" class="dashboard-section">
+                    <div class="dashboard-header">
+                        <h1>Analytics</h1>
+                        <p>Platform statistics and insights</p>
+                    </div>
+
+                    <!-- Analytics Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="avgClubMembers">0</div>
+                            <div class="stat-label">Avg Members per Club</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="mediaThisMonth">0</div>
+                            <div class="stat-label">Media This Month</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="newUsersThisMonth">0</div>
+                            <div class="stat-label">New Users This Month</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="clubGrowthRate">0%</div>
+                            <div class="stat-label">Club Growth Rate</div>
+                        </div>
+                    </div>
+
+                    <!-- Category Distribution -->
+                    <div class="card">
+                        <div class="card-header">Club Category Distribution</div>
+                        <div class="card-body">
+                            <div id="categoryChart">
+                                <p>Loading category distribution...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings" class="dashboard-section">
+                    <div class="dashboard-header">
+                        <h1>System Settings</h1>
+                        <p>Configure platform settings and preferences</p>
+                    </div>
+
+                    <!-- Platform Settings -->
+                    <div class="card">
+                        <div class="card-header">Platform Configuration</div>
+                        <div class="card-body">
+                            <form id="settingsForm" onsubmit="updateSettings(event)">
+                                <div class="form-group">
+                                    <label for="platformName">Platform Name:</label>
+                                    <input type="text" id="platformName" name="platformName" value="College Clubs Hub" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="contactEmail">Contact Email:</label>
+                                    <input type="email" id="contactEmail" name="contactEmail" value="admin@college.edu" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="maxFileSize">Max File Size (MB):</label>
+                                    <input type="number" id="maxFileSize" name="maxFileSize" value="10" min="1" max="50" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="autoApproveMedia" name="autoApproveMedia">
+                                        Auto-approve media uploads
+                                    </label>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="allowNewRegistrations" name="allowNewRegistrations" checked>
+                                        Allow new registrations
+                                    </label>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Save Settings</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Admin Actions -->
+                    <div class="card">
+                        <div class="card-header">Administrative Actions</div>
+                        <div class="card-body">
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <button class="btn btn-secondary" onclick="exportData()">Export Data</button>
+                                <button class="btn btn-warning" onclick="clearOldData()">Clear Old Data</button>
+                                <button class="btn btn-outline" onclick="generateReport()">Generate Report</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Info -->
+                    <div class="card">
+                        <div class="card-header">System Information</div>
+                        <div class="card-body">
+                            <div class="system-info">
+                                <p><strong>Version:</strong> 1.0.0</p>
+                                <p><strong>Last Updated:</strong> <span id="lastUpdate">Loading...</span></p>
+                                <p><strong>Database Status:</strong> <span class="status-badge status-active">Online</span></p>
+                                <p><strong>Storage Used:</strong> <span id="storageUsed">Calculating...</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for Club Actions -->
+    <div id="clubActionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="clubActionTitle">Club Action</h2>
+                <span class="close" onclick="closeClubActionModal()">&times;</span>
+            </div>
+            <div id="clubActionBody" class="modal-body">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Super Admin Confirmation Modal -->
+    <div id="destroyConfirmModal" class="modal danger-modal">
+        <div class="modal-content">
+            <div class="modal-header danger">
+                <h3><i class="fas fa-skull-crossbones"></i> DANGER ZONE</h3>
+                <button class="close-btn" onclick="closeModal('destroyConfirmModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="warning-content">
+                    <div class="warning-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h4>This action will PERMANENTLY destroy the entire database!</h4>
+                    <p>This will delete:</p>
+                    <ul>
+                        <li>All club data and profiles</li>
+                        <li>All user accounts and sessions</li>
+                        <li>All stored content and media</li>
+                        <li>All system configurations</li>
+                    </ul>
+                    <p><strong>This action cannot be undone!</strong></p>
+                    
+                    <div class="confirmation-input">
+                        <label>Type <code>DESTROY EVERYTHING</code> to confirm:</label>
+                        <input type="text" id="destroyConfirmInput" placeholder="Type confirmation text here...">
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn secondary" onclick="closeModal('destroyConfirmModal')">Cancel</button>
+                    <button type="button" class="btn danger" onclick="executeDestroy()" id="destroyExecuteBtn" disabled>
+                        <i class="fas fa-skull-crossbones"></i> DESTROY EVERYTHING
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Club Modal -->
+    <div id="addClubModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Club</h3>
+                <button class="close-btn" onclick="closeModal('addClubModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addClubForm" onsubmit="submitAddClub(event)">
+                    <div class="form-group">
+                        <label for="newClubName">Club Name</label>
+                        <input type="text" id="newClubName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newClubDescription">Description</label>
+                        <textarea id="newClubDescription" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="newClubCategory">Category</label>
+                        <select id="newClubCategory" name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Arts">Arts</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Academic">Academic</option>
+                            <option value="Cultural">Cultural</option>
+                            <option value="Social Service">Social Service</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newClubMembers">Members</label>
+                        <input type="number" id="newClubMembers" name="members" value="0" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newClubEmail">Contact Email</label>
+                        <input type="email" id="newClubEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newClubMeetingTime">Meeting Time</label>
+                        <input type="text" id="newClubMeetingTime" name="meetingTime" placeholder="e.g., Fridays 4:00 PM" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newClubLocation">Location</label>
+                        <input type="text" id="newClubLocation" name="location" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newClubLogo">Logo (emoji or short text)</label>
+                        <input type="text" id="newClubLogo" name="logo" placeholder="e.g., 🚀">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('addClubModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Club</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/main.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/clubs.js"></script>
+    <script src="../js/admin-dashboard.js"></script>
+</body>
+</html>

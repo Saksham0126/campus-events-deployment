@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- Enhanced Viewport Settings -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="College Clubs Hub Club Dashboard - Manage your club profile, upload media, and engage with members.">
+    <meta name="keywords" content="club dashboard, club management, student organizations, media upload">
+    <meta name="author" content="College Clubs Hub">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Mobile Optimization -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- iOS Specific Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Club Dashboard">
+    
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#6366f1">
+    <meta name="msapplication-navbutton-color" content="#6366f1">
+    
+    <!-- Prevent automatic phone number detection -->
+    <meta name="format-detection" content="telephone=no">
+    
+    <title>Club Dashboard - College Clubs Hub</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <!-- Desktop Navigation -->
+    <header class="navbar desktop-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h1>Club Dashboard</h1>
+            </div>
+            <nav class="nav-menu">
+                <span id="clubName" class="club-name"></span>
+            </nav>
+            <div class="nav-auth">
+                <button class="btn-primary btn-icon" onclick="goToMainSite()">
+                    <span class="icon">🏠</span>
+                    <span>View Site</span>
+                </button>
+                <button class="btn-outline btn-icon" onclick="logout()">
+                    <span class="icon">🚪</span>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Top Bar -->
+    <header class="mobile-top-bar">
+        <a href="#" class="mobile-brand">
+            <span class="brand-text">Club Dashboard</span>
+        </a>
+        <button class="mobile-login-btn" onclick="logout()">
+            <span>🚪</span>
+        </button>
+    </header>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="#overview" class="mobile-nav-item active" onclick="showSection('overview')">
+            <span>📊</span>
+            <span>Overview</span>
+        </a>
+        <a href="#profile" class="mobile-nav-item" onclick="showSection('profile')">
+            <span>👤</span>
+            <span>Profile</span>
+        </a>
+        <a href="#media" class="mobile-nav-item" onclick="showSection('media')">
+            <span>📷</span>
+            <span>Media</span>
+        </a>
+        <a href="#upload" class="mobile-nav-item" onclick="showSection('upload')">
+            <span>⬆️</span>
+            <span>Upload</span>
+        </a>
+        <a href="#settings" class="mobile-nav-item" onclick="showSection('settings')">
+            <span>⚙️</span>
+            <span>Settings</span>
+        </a>
+    </nav>
+
+    <!-- Main Dashboard Content -->
+    <main class="main-content">
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <aside class="dashboard-sidebar">
+                <ul class="sidebar-menu">
+                    <li><a href="#overview" class="nav-link active" onclick="showSection('overview')">Overview</a></li>
+                    <li><a href="#profile" class="nav-link" onclick="showSection('profile')">Club Profile</a></li>
+                    <li><a href="#media" class="nav-link" onclick="showSection('media')">Media Gallery</a></li>
+                    <li><a href="#upload" class="nav-link" onclick="showSection('upload')">Upload Content</a></li>
+                    <li><a href="#settings" class="nav-link" onclick="showSection('settings')">Settings</a></li>
+                </ul>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="dashboard-content">
+                <!-- Overview Section -->
+                <div id="overview" class="dashboard-section active">
+                    <div class="dashboard-header">
+                        <h1>Dashboard Overview</h1>
+                        <p>Welcome back! Here's what's happening with your club.</p>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalMembers">0</div>
+                            <div class="stat-label">Total Members</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalMedia">0</div>
+                            <div class="stat-label">Media Items</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="pendingMedia">0</div>
+                            <div class="stat-label">Pending Approval</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="profileViews">0</div>
+                            <div class="stat-label">Profile Views</div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="card">
+                        <div class="card-header">Recent Activity</div>
+                        <div class="card-body">
+                            <div id="recentActivity">
+                                <p>Loading recent activity...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card">
+                        <div class="card-header">Quick Actions</div>
+                        <div class="card-body">
+                            <div class="quick-actions" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <button class="btn btn-primary" onclick="showSection('upload')">Upload New Media</button>
+                                <button class="btn btn-secondary" onclick="showSection('profile')">Edit Profile</button>
+                                <button class="btn btn-outline" onclick="viewPublicProfile()">View Public Profile</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
+                <div id="profile" class="dashboard-section">
+                    <div class="dashboard-header">
+                        <h1>Club Profile</h1>
+                        <p>Manage your club's public information</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">Basic Information</div>
+                        <div class="card-body">
+                            <form id="profileForm" onsubmit="updateProfile(event)">
+                                <div class="form-group">
+                                    <label for="clubNameEdit">Club Name:</label>
+                                    <input type="text" id="clubNameEdit" name="name" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="clubDescription">Description:</label>
+                                    <textarea id="clubDescription" name="description" rows="4" required></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="clubCategory">Category:</label>
+                                    <select id="clubCategory" name="category" required>
+                                        <option value="">Select Category</option>
+                                        <option value="Technology">Technology</option>
+                                        <option value="Arts">Arts</option>
+                                        <option value="Sports">Sports</option>
+                                        <option value="Academic">Academic</option>
+                                        <option value="Cultural">Cultural</option>
+                                        <option value="Social Service">Social Service</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="clubMembers">Number of Members:</label>
+                                    <input type="number" id="clubMembers" name="members" min="1" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="clubEmail">Contact Email:</label>
+                                    <input type="email" id="clubEmail" name="email" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="meetingTime">Meeting Time:</label>
+                                    <input type="text" id="meetingTime" name="meetingTime" placeholder="e.g., Fridays 4:00 PM" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="meetingLocation">Meeting Location:</label>
+                                    <input type="text" id="meetingLocation" name="location" required>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Update Profile</button>
+                            </form>
+                            
+                            <!-- Test button to debug function call -->
+                            <button type="button" class="btn btn-secondary" style="margin-top: 1rem;" onclick="testUpdateProfile()">
+                                Test Update Profile Function
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Media Gallery Section -->
+                <div id="media" class="dashboard-section">
+                    <div class="dashboard-header">
+                        <h1>Media Gallery</h1>
+                        <p>Manage your club's photos and videos</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">Your Media</div>
+                        <div class="card-body">
+                            <div id="mediaGallery" class="media-gallery">
+                                <p>Loading media...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Section -->
+                <div id="upload" class="dashboard-section">
+                    <div class="dashboard-header">
+                        <h1>Upload Content</h1>
+                        <p>Add new photos and videos to showcase your club</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">Upload Media</div>
+                        <div class="card-body">
+                            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                                <i>📁</i>
+                                <p>Click here to select files or drag and drop</p>
+                                <p style="font-size: 0.9rem; color: #666;">Supported formats: JPG, PNG, GIF, MP4, MOV (Max 10MB each)</p>
+                            </div>
+                            <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;" onchange="handleFileSelect(event)">
+                            
+                            <div id="fileList" class="file-list" style="display: none;">
+                                <h4>Selected Files:</h4>
+                                <div id="selectedFiles"></div>
+                                <button class="btn btn-primary" onclick="uploadFiles()" id="uploadButton">Upload Files</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings" class="dashboard-section">
+                    <div class="dashboard-header">
+                        <h1>Settings</h1>
+                        <p>Manage your account settings and preferences</p>
+                    </div>
+
+                    <!-- Change Password -->
+                    <div class="card">
+                        <div class="card-header">Change Password</div>
+                        <div class="card-body">
+                            <form id="passwordForm" onsubmit="changePassword(event)">
+                                <div class="form-group">
+                                    <label for="currentPassword">Current Password:</label>
+                                    <input type="password" id="currentPassword" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="newPassword">New Password:</label>
+                                    <input type="password" id="newPassword" minlength="6" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="confirmPassword">Confirm New Password:</label>
+                                    <input type="password" id="confirmPassword" minlength="6" required>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Change Password</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Club Status -->
+                    <div class="card">
+                        <div class="card-header">Club Status</div>
+                        <div class="card-body">
+                            <div class="status-info">
+                                <p><strong>Current Status:</strong> <span id="clubStatus" class="status-badge status-active">Active</span></p>
+                                <p><strong>Last Login:</strong> <span id="lastLogin">Loading...</span></p>
+                                <p><strong>Account Created:</strong> <span id="accountCreated">Loading...</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Danger Zone -->
+                    <div class="card">
+                        <div class="card-header" style="color: #dc3545;">Danger Zone</div>
+                        <div class="card-body">
+                            <p style="color: #666; margin-bottom: 1rem;">These actions cannot be undone. Please proceed with caution.</p>
+                            <button class="btn btn-danger" onclick="confirmDeleteAccount()">Delete Club Account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirm Deletion</h2>
+                <span class="close" onclick="closeDeleteModal()">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 2rem;">
+                <p>Are you sure you want to delete your club account? This action cannot be undone.</p>
+                <p>Type <strong>"DELETE"</strong> to confirm:</p>
+                <input type="text" id="deleteConfirmation" placeholder="Type DELETE here">
+                <div style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                    <button class="btn btn-danger" onclick="deleteAccount()">Delete Account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/main.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/clubs.js"></script>
+    <script src="../js/club-dashboard.js"></script>
+</body>
+</html>

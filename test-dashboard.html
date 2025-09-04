@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        button { padding: 10px 20px; margin: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Club Dashboard Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Profile Form</h2>
+        <form id="profileForm" onsubmit="updateProfile(event)">
+            <div>
+                <label for="clubNameEdit">Club Name:</label>
+                <input type="text" id="clubNameEdit" name="name" value="Test Club" required>
+            </div>
+            <div>
+                <label for="clubDescription">Description:</label>
+                <textarea id="clubDescription" name="description" required>Test Description</textarea>
+            </div>
+            <div>
+                <label for="clubCategory">Category:</label>
+                <select id="clubCategory" name="category" required>
+                    <option value="Technology">Technology</option>
+                    <option value="Arts">Arts</option>
+                </select>
+            </div>
+            <div>
+                <label for="clubMembers">Members:</label>
+                <input type="number" id="clubMembers" name="members" value="10" required>
+            </div>
+            <div>
+                <label for="clubEmail">Email:</label>
+                <input type="email" id="clubEmail" name="email" value="test@club.com" required>
+            </div>
+            <div>
+                <label for="meetingTime">Meeting Time:</label>
+                <input type="text" id="meetingTime" name="meetingTime" value="Fridays 4:00 PM" required>
+            </div>
+            <div>
+                <label for="meetingLocation">Location:</label>
+                <input type="text" id="meetingLocation" name="location" value="Room 101" required>
+            </div>
+            <button type="submit">Update Profile</button>
+        </form>
+        
+        <button onclick="testUpdateProfile()">Test Update Profile Function</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Console Output</h2>
+        <div id="consoleOutput"></div>
+    </div>
+
+    <!-- Load scripts in order -->
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/clubs.js"></script>
+    <script src="js/club-dashboard.js"></script>
+    
+    <script>
+        // Override console.log to show output on page
+        const originalLog = console.log;
+        const originalError = console.error;
+        const outputDiv = document.getElementById('consoleOutput');
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const message = args.join(' ');
+            outputDiv.innerHTML += '<div class="success">[LOG] ' + message + '</div>';
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            const message = args.join(' ');
+            outputDiv.innerHTML += '<div class="error">[ERROR] ' + message + '</div>';
+        };
+        
+        // Test if functions are available
+        window.addEventListener('load', function() {
+            console.log('Page loaded');
+            console.log('updateProfile function:', typeof updateProfile);
+            console.log('ClubManager:', typeof ClubManager);
+            console.log('CollegeClubApp:', typeof CollegeClubApp);
+        });
+    </script>
+</body>
+</html>

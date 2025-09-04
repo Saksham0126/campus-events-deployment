@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- Enhanced Viewport Settings -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="College Clubs Hub - Explore amazing clubs and societies, view their latest updates, and connect with like-minded students!">
+    <meta name="keywords" content="college clubs, student organizations, university, societies, student life">
+    <meta name="author" content="College Clubs Hub">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Mobile Optimization -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- iOS Specific Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Clubs Hub">
+    
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#6366f1">
+    <meta name="msapplication-navbutton-color" content="#6366f1">
+    
+    <!-- Touch Icons for iOS -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    
+    <!-- Prevent automatic phone number detection -->
+    <meta name="format-detection" content="telephone=no">
+    
+    <title>College Clubs Hub</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <script src="js/config.js"></script>
+</head>
+<body>
+    <!-- Desktop Navigation -->
+    <header class="navbar desktop-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h1>College Clubs Hub</h1>
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="#home" class="nav-link active">Home</a></li>
+                    <li><a href="#clubs" class="nav-link">All Clubs</a></li>
+                    <li><a href="#about" class="nav-link">About</a></li>
+                    <li><a href="#contact" class="nav-link">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="nav-auth">
+                <button class="btn-login-unified" onclick="openLoginModal()">
+                    <span class="login-icon">👤</span>
+                    <span class="login-text">Login</span>
+                    <div class="login-pulse"></div>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Top Bar -->
+    <header class="mobile-top-bar">
+        <a href="#home" class="mobile-brand">
+            <span class="brand-text">Clubs Hub</span>
+        </a>
+        <button class="mobile-login-btn" onclick="openLoginModal()">
+            <span>👤</span>
+        </button>
+    </header>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="#home" class="mobile-nav-item active">
+            <span>🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="#clubs" class="mobile-nav-item">
+            <span>🏛️</span>
+            <span>All Clubs</span>
+        </a>
+        <a href="#about" class="mobile-nav-item">
+            <span>ℹ️</span>
+            <span>About</span>
+        </a>
+        <a href="#contact" class="mobile-nav-item">
+            <span>📞</span>
+            <span>Contact</span>
+        </a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Carousel Section -->
+        <section id="home" class="hero-carousel-section">
+            <div class="hero-carousel-container">
+                <div class="hero-carousel" id="heroCarousel">
+                    <div class="hero-carousel-inner" id="heroCarouselInner">
+                        <!-- Carousel items will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Hero Overlay Content -->
+                <div class="hero-overlay">
+                    <div class="hero-content">
+                        <h1>Discover College Clubs & Activities</h1>
+                        <p>Explore amazing clubs and societies, view their latest updates, and connect with like-minded students!</p>
+                        <div class="hero-buttons">
+                            <button class="btn-hero-primary" onclick="scrollToClubs()">Browse All Clubs</button>
+                            <button class="btn-hero-secondary" onclick="scrollToClubs()">Join Now</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Carousel Controls -->
+                <button class="hero-carousel-control hero-carousel-prev" onclick="previousHeroSlide()" aria-label="Previous slide">
+                    <span>❮</span>
+                </button>
+                <button class="hero-carousel-control hero-carousel-next" onclick="nextHeroSlide()" aria-label="Next slide">
+                    <span>❯</span>
+                </button>
+                
+                <!-- Carousel Indicators -->
+                <div class="hero-carousel-indicators" id="heroCarouselIndicators">
+                    <!-- Indicators will be added dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Clubs Grid Section -->
+        <section id="clubs" class="clubs-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Featured Clubs</h2>
+                    <button class="btn-refresh" onclick="refreshClubsData()" title="Refresh clubs data">
+                        <span>🔄</span> Refresh
+                    </button>
+                </div>
+                <div class="clubs-grid" id="clubsGrid">
+                    <!-- Clubs will be dynamically loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about-section">
+            <div class="container">
+                <h2>About Our Platform</h2>
+                <p>A platform that connects students with clubs and societies across our college. Discover activities, stay updated with events, and engage with communities.</p>
+                <p class="creators-credit">Made with 💖 by Saksham & Ankit</p>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact-section">
+            <div class="container">
+                <h2>Contact Us</h2>
+                <p>For questions about clubs or this platform, reach out to us!</p>
+                <div class="contact-info">
+                    <p>Email: clubs@college.edu</p>
+                    <p>Phone: (555) 123-4567</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 College Clubs Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Gmail Authentication Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content auth-modal">
+            <div class="modal-header">
+                <h2 id="authModalTitle">Login to College Clubs Hub</h2>
+                <span class="close" onclick="closeLoginModal()">&times;</span>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-form active">
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Gmail Address:</label>
+                        <input type="email" id="loginEmail" name="email" required placeholder="your.email@gmail.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword">Password:</label>
+                        <input type="password" id="loginPassword" name="password" required placeholder="Enter your password">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" id="loginBtn">
+                            <span class="btn-text">Sign In</span>
+                            <span class="btn-spinner" style="display: none;">🔄</span>
+                        </button>
+                    </div>
+                    <div id="loginError" class="error-message" style="display: none;"></div>
+                    
+                    <div class="form-links">
+                        <a href="#" onclick="showForgotPassword()">Forgot Password?</a>
+                        <a href="#" onclick="showSignup()">Don't have an account? Sign Up</a>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Signup Form -->
+            <div id="signupForm" class="auth-form">
+                <form onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label for="signupName">Full Name:</label>
+                        <input type="text" id="signupName" name="name" required placeholder="Your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupEmail">Gmail Address:</label>
+                        <input type="email" id="signupEmail" name="email" required placeholder="your.email@gmail.com or name@college.edu" oninput="onSignupEmailInput()">
+                    </div>
+                    
+                    <div class="form-group" id="clubNameGroup" style="display: none;">
+                        <label for="signupClubName">Club/Organization Name:</label>
+                        <input type="text" id="signupClubName" name="clubName" placeholder="Enter club name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupPassword">Password:</label>
+                        <input type="password" id="signupPassword" name="password" required placeholder="Create a secure password" minlength="6">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password:</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm your password" minlength="6">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" id="signupBtn">
+                            <span class="btn-text">Create Account</span>
+                            <span class="btn-spinner" style="display: none;">🔄</span>
+                        </button>
+                    </div>
+                    
+                    <div class="form-links">
+                        <a href="#" onclick="showLogin()">Already have an account? Sign In</a>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Forgot Password Form -->
+            <div id="forgotPasswordForm" class="auth-form">
+                <form onsubmit="handleForgotPassword(event)">
+                    <div class="form-group">
+                        <label for="forgotEmail">Gmail Address:</label>
+                        <input type="email" id="forgotEmail" name="email" required placeholder="your.email@gmail.com">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" id="forgotBtn">
+                            <span class="btn-text">Send Reset Link</span>
+                            <span class="btn-spinner" style="display: none;">🔄</span>
+                        </button>
+                    </div>
+                    
+                    <div class="form-links">
+                        <a href="#" onclick="showLogin()">Back to Sign In</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Club Detail Modal -->
+    <div id="clubDetailModal" class="modal">
+        <div class="modal-content club-detail-content">
+            <div class="modal-header">
+                <h2 id="clubDetailTitle">Club Name</h2>
+                <span class="close" onclick="closeClubDetailModal()">&times;</span>
+            </div>
+            <div id="clubDetailBody" class="club-detail-body">
+                <!-- Club details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/clubs.js"></script>
+</body>
+</html>
