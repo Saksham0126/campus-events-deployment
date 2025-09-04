@@ -1,0 +1,12 @@
+{
+  "name": "college-clubs-hub",
+  "version": "1.0.0",
+  "description": "College Clubs Hub - Frontend and Backend",
+  "scripts": {
+    "build": "cd college-club-backend && npm install",
+    "start": "cd college-club-backend && npm start"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
