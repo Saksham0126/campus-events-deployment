@@ -106,7 +106,7 @@ body::before {
 /* Mobile Navigation - Hidden by default */
 .mobile-top-bar,
 .mobile-bottom-nav {
-    display: none;
+    display: none !important;
 }
 
 /* Mobile-specific container adjustments */
@@ -133,6 +133,18 @@ body::before {
     .mobile-top-bar,
     .mobile-bottom-nav {
         display: flex !important;
+    }
+    
+    /* Hide mobile navigation on larger screens */
+    @media (min-width: 769px) {
+        .mobile-top-bar,
+        .mobile-bottom-nav {
+            display: none !important;
+        }
+        
+        .desktop-nav {
+            display: block !important;
+        }
     }
     
     /* Mobile hero section adjustments */
