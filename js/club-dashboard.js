@@ -448,7 +448,7 @@ async function uploadFiles() {
         });
         formData.append('clubId', currentClubId);
         
-        const response = await fetch('http://localhost:3000/api/upload', {
+        const response = await fetch(`${window.APP_CONFIG.API_BASE}/api/upload`, {
             method: 'POST',
             body: formData
         });
@@ -461,7 +461,7 @@ async function uploadFiles() {
                 const mediaData = {
                     id: fileData.filename,
                     type: fileData.type,
-                    url: `http://localhost:3000${fileData.url}`,
+                    url: `${window.APP_CONFIG.API_BASE}${fileData.url}`,
                     caption: fileData.originalName.split('.')[0],
                     fileName: fileData.originalName,
                     size: fileData.size,

@@ -406,7 +406,7 @@ function displayHeroCarousel() {
         // Use URL as-is if already absolute or local asset; otherwise don't force localhost
         const heroSrc = (item.url && (item.url.startsWith('http') || item.url.startsWith('data:') || item.url.startsWith('blob:') || item.url.match(/^(images|videos)\//)))
             ? item.url
-            : (item.url && item.url.startsWith('/') ? `http://localhost:3000${item.url}` : item.url);
+                            : (item.url && item.url.startsWith('/') ? `${window.APP_CONFIG.API_BASE}${item.url}` : item.url);
         const mediaElement = item.type === 'image' 
             ? `<img src="${heroSrc}" alt="${item.caption || 'Club media'}" loading="lazy" decoding="async" />` 
             : `<video src="${heroSrc}" muted preload="metadata" autoplay loop></video>`;

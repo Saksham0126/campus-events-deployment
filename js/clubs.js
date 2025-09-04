@@ -193,7 +193,7 @@ async function loadClubs() {
     // Load real media for each club (only if backend is available)
     const clubsWithMedia = await Promise.all(clubs.map(async (club) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/club/${club.id}/media`);
+            const response = await fetch(`${window.APP_CONFIG.API_BASE}/api/club/${club.id}/media`);
             const result = await response.json();
             return { ...club, media: result.media };
         } catch (error) {
@@ -229,7 +229,7 @@ function createClubCard(club) {
     const src = featuredMedia && featuredMedia.url
         ? (featuredMedia.url.startsWith('http') || featuredMedia.url.startsWith('data:') || featuredMedia.url.startsWith('blob:') || featuredMedia.url.match(/^(images|videos)\//)
             ? featuredMedia.url
-            : (featuredMedia.url.startsWith('/') ? `http://localhost:3000${featuredMedia.url}` : featuredMedia.url))
+                            : (featuredMedia.url.startsWith('/') ? `${window.APP_CONFIG.API_BASE}${featuredMedia.url}` : featuredMedia.url))
         : null;
 
     return `
