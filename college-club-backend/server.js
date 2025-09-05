@@ -3,6 +3,9 @@ const multer = require('multer');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -30,7 +33,14 @@ app.use((req, res, next) => {
     next();
 });
 
-// Create uploads directory if it doesn't exist
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Create uploads directory if it doesn't exist (fallback for local development)
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
@@ -160,24 +170,16 @@ const SAMPLE_CLUBS = [
 // In-memory storage for clubs (in production, this would be a database)
 let clubs = [...SAMPLE_CLUBS];
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const clubId = req.body.clubId || 'general';
-        const clubDir = path.join(uploadsDir, clubId);
-        
-        // Create club directory if it doesn't exist
-        if (!fs.existsSync(clubDir)) {
-            fs.mkdirSync(clubDir, { recursive: true });
-        }
-        
-        cb(null, clubDir);
-    },
-    filename: function (req, file, cb) {
-        // Generate unique filename
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const ext = path.extname(file.originalname);
-        cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+// Configure multer for file uploads with Cloudinary
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'college-clubs-hub',
+        resource_type: 'auto',
+        transformation: [
+            { quality: 'auto:good' },
+            { fetch_format: 'auto' }
+        ]
     }
 });
 
@@ -269,14 +271,15 @@ app.post('/api/upload', upload.array('files', 10), (req, res) => {
         const clubId = req.body.clubId || 'general';
         const uploadedFiles = req.files.map(file => {
             const mediaData = {
-                id: path.parse(file.filename).name,
-                type: file.mimetype.startsWith('image/') ? 'image' : 'video',
-                url: `/uploads/${clubId}/${file.filename}`,
+                id: file.public_id,
+                type: file.resource_type === 'image' ? 'image' : 'video',
+                url: file.secure_url,
                 originalName: file.originalname,
-                filename: file.filename,
-                size: file.size,
+                filename: file.public_id,
+                size: file.bytes,
                 uploadDate: new Date().toISOString(),
-                status: 'pending'
+                status: 'pending',
+                cloudinaryId: file.public_id
             };
             
             // Add to club media
@@ -291,10 +294,11 @@ app.post('/api/upload', upload.array('files', 10), (req, res) => {
         
         res.json({ 
             success: true, 
-            message: 'Files uploaded successfully',
+            message: 'Files uploaded successfully to cloud storage',
             files: uploadedFiles
         });
     } catch (error) {
+        console.error('Upload error:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 });
@@ -325,7 +329,106 @@ app.get('/api/media/carousel', (req, res) => {
     }
 });
 
-// Serve uploaded files
+// Add video URLs endpoint
+app.post('/api/video-urls', (req, res) => {
+    try {
+        const { clubId, urls } = req.body;
+        
+        if (!clubId || !urls || !Array.isArray(urls) || urls.length === 0) {
+            return res.status(400).json({ success: false, message: 'Club ID and URLs are required' });
+        }
+        
+        const club = clubs.find(c => c.id === clubId);
+        if (!club) {
+            return res.status(404).json({ success: false, message: 'Club not found' });
+        }
+        
+        const videoData = urls.map((url, index) => {
+            const videoId = `video-url-${Date.now()}-${index}`;
+            return {
+                id: videoId,
+                type: 'video',
+                url: url,
+                originalName: `Video ${index + 1}`,
+                filename: videoId,
+                size: 0, // No file size for URLs
+                uploadDate: new Date().toISOString(),
+                status: 'pending',
+                isEmbedded: true,
+                platform: getVideoPlatform(url)
+            };
+        });
+        
+        // Add to club media
+        if (!club.media) club.media = [];
+        club.media.push(...videoData);
+        
+        res.json({ 
+            success: true, 
+            message: 'Video URLs added successfully',
+            videos: videoData
+        });
+    } catch (error) {
+        console.error('Video URL error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// Helper function to determine video platform
+function getVideoPlatform(url) {
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        return 'YouTube';
+    } else if (url.includes('drive.google.com')) {
+        return 'Google Drive';
+    }
+    return 'Unknown';
+}
+
+// Delete media endpoint
+app.delete('/api/media/:mediaId', async (req, res) => {
+    try {
+        const { mediaId } = req.params;
+        const { clubId } = req.body;
+        
+        // Find the media in the club
+        const club = clubs.find(c => c.id === clubId);
+        if (!club || !club.media) {
+            return res.status(404).json({ success: false, message: 'Club or media not found' });
+        }
+        
+        const mediaIndex = club.media.findIndex(m => m.id === mediaId);
+        if (mediaIndex === -1) {
+            return res.status(404).json({ success: false, message: 'Media not found' });
+        }
+        
+        const media = club.media[mediaIndex];
+        
+        // Delete from Cloudinary if it has a cloudinaryId (only for uploaded files)
+        if (media.cloudinaryId) {
+            try {
+                await cloudinary.uploader.destroy(media.cloudinaryId, {
+                    resource_type: media.type === 'video' ? 'video' : 'image'
+                });
+            } catch (cloudinaryError) {
+                console.warn('Failed to delete from Cloudinary:', cloudinaryError.message);
+                // Continue with local deletion even if Cloudinary deletion fails
+            }
+        }
+        
+        // Remove from club media
+        club.media.splice(mediaIndex, 1);
+        
+        res.json({ 
+            success: true, 
+            message: 'Media deleted successfully' 
+        });
+    } catch (error) {
+        console.error('Delete error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// Serve uploaded files (fallback for local development)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health check

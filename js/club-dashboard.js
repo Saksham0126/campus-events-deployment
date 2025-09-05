@@ -3,6 +3,7 @@
 let currentClubId = null;
 let currentClub = null;
 let selectedFiles = [];
+let selectedVideoUrls = [];
 
 // Initialize dashboard when DOM loads
 document.addEventListener('DOMContentLoaded', function() {
@@ -180,17 +181,26 @@ function loadMediaGallery() {
     }
 
     gallery.innerHTML = currentClub.media.map(media => {
-        // Handle different URL formats (absolute vs relative)
-        const mediaUrl = media.url.startsWith('http') || media.url.startsWith('data:') 
-            ? media.url 
-            : `../${media.url}`;
+        // Handle different media types
+        let mediaElement;
+        
+        if (media.type === 'image') {
+            // Cloudinary URLs are already absolute
+            const mediaUrl = media.url;
+            mediaElement = `<img src="${mediaUrl}" alt="${media.caption || 'Club media'}" loading="lazy" onerror="this.src='../images/placeholders/club-placeholder.jpg'" />`;
+        } else if (media.type === 'video') {
+            if (media.isEmbedded) {
+                // Embedded video (YouTube/Google Drive)
+                mediaElement = `<div class="video-embed">${getEmbeddedVideo(media.url)}</div>`;
+            } else {
+                // Regular video file
+                mediaElement = `<video src="${media.url}" controls preload="metadata"><p>Video not available</p></video>`;
+            }
+        }
         
         return `
         <div class="media-item">
-            ${media.type === 'image' 
-                ? `<img src="${mediaUrl}" alt="${media.caption || 'Club media'}" onerror="this.src='../images/placeholders/club-placeholder.jpg'" />` 
-                : `<video src="${mediaUrl}" controls><p>Video not available</p></video>`
-            }
+            ${mediaElement}
             <div class="media-overlay">
                 <div class="media-actions">
                     <button onclick="viewMedia('${media.id}')" title="View">👁️</button>
@@ -199,6 +209,7 @@ function loadMediaGallery() {
                 </div>
             </div>
             ${media.status === 'pending' ? '<div class="status-badge status-pending">Pending</div>' : ''}
+            ${media.isEmbedded ? '<div class="status-badge status-embedded">Embedded</div>' : ''}
         </div>
         `;
     }).join('');
@@ -375,16 +386,16 @@ function handleFileSelect(event) {
     handleFiles(files);
 }
 
-// Handle selected files
+// Handle selected files (images only now)
 function handleFiles(files) {
     selectedFiles = [];
     
-    // Validate files
+    // Validate files (images only)
     const validFiles = files.filter(file => {
-        // Check file type
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'video/mp4', 'video/quicktime'];
+        // Check file type (images only)
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
         if (!validTypes.includes(file.type)) {
-            CollegeClubApp.showAlert(`Invalid file type: ${file.name}`, 'error');
+            CollegeClubApp.showAlert(`Invalid file type: ${file.name}. Only images are supported for file upload. Use the Video URLs tab for videos.`, 'error');
             return false;
         }
         
@@ -459,14 +470,15 @@ async function uploadFiles() {
             // Add uploaded files to club media
             result.files.forEach(fileData => {
                 const mediaData = {
-                    id: fileData.filename,
+                    id: fileData.id,
                     type: fileData.type,
-                    url: `${window.APP_CONFIG.API_BASE}${fileData.url}`,
+                    url: fileData.url, // Cloudinary URLs are already absolute
                     caption: fileData.originalName.split('.')[0],
                     fileName: fileData.originalName,
                     size: fileData.size,
                     uploadDate: new Date().toISOString(),
-                    status: 'pending'
+                    status: 'pending',
+                    cloudinaryId: fileData.cloudinaryId
                 };
                 
                 ClubManager.addMediaToClub(currentClubId, mediaData);
@@ -477,7 +489,7 @@ async function uploadFiles() {
             loadMediaGallery();
             updateOverviewStats();
             
-            CollegeClubApp.showAlert('Files uploaded successfully! Pending admin approval.', 'success');
+            CollegeClubApp.showAlert('Files uploaded successfully to cloud storage! Pending admin approval.', 'success');
         } else {
             throw new Error(result.message);
         }
@@ -519,14 +531,29 @@ function editMedia(mediaId) {
 }
 
 // Delete media item
-function deleteMedia(mediaId) {
+async function deleteMedia(mediaId) {
     if (confirm('Are you sure you want to delete this media item?')) {
         try {
-            ClubManager.removeMediaFromClub(currentClubId, mediaId);
-            currentClub = ClubManager.getClubById(currentClubId);
-            loadMediaGallery();
-            updateOverviewStats();
-            CollegeClubApp.showAlert('Media deleted successfully!', 'success');
+            const response = await fetch(`${window.APP_CONFIG.API_BASE}/api/media/${mediaId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ clubId: currentClubId })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Remove from local club data
+                ClubManager.removeMediaFromClub(currentClubId, mediaId);
+                currentClub = ClubManager.getClubById(currentClubId);
+                loadMediaGallery();
+                updateOverviewStats();
+                CollegeClubApp.showAlert('Media deleted successfully from cloud storage!', 'success');
+            } else {
+                throw new Error(result.message);
+            }
         } catch (error) {
             CollegeClubApp.showAlert('Error deleting media: ' + error.message, 'error');
         }
@@ -602,6 +629,154 @@ function deleteAccount() {
             CollegeClubApp.showAlert('Error deleting account: ' + error.message, 'error');
         }
     }
+}
+
+// Switch upload tabs
+function switchUploadTab(tab) {
+    // Update tab buttons
+    document.getElementById('filesTab').classList.toggle('active', tab === 'files');
+    document.getElementById('urlsTab').classList.toggle('active', tab === 'urls');
+    
+    // Update tab content
+    document.getElementById('fileUploadTab').style.display = tab === 'files' ? 'block' : 'none';
+    document.getElementById('urlUploadTab').style.display = tab === 'urls' ? 'block' : 'none';
+}
+
+// Add video URL
+function addVideoUrl() {
+    const urlInput = document.getElementById('videoUrlInput');
+    const url = urlInput.value.trim();
+    
+    if (!url) {
+        CollegeClubApp.showAlert('Please enter a video URL', 'error');
+        return;
+    }
+    
+    // Validate URL format
+    if (!isValidVideoUrl(url)) {
+        CollegeClubApp.showAlert('Please enter a valid YouTube or Google Drive URL', 'error');
+        return;
+    }
+    
+    // Check if URL already exists
+    if (selectedVideoUrls.includes(url)) {
+        CollegeClubApp.showAlert('This URL has already been added', 'error');
+        return;
+    }
+    
+    selectedVideoUrls.push(url);
+    urlInput.value = '';
+    displaySelectedUrls();
+}
+
+// Validate video URL
+function isValidVideoUrl(url) {
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)/;
+    const googleDriveRegex = /^(https?:\/\/)?(www\.)?drive\.google\.com\/file\/d\/[a-zA-Z0-9_-]+\/view/;
+    
+    return youtubeRegex.test(url) || googleDriveRegex.test(url);
+}
+
+// Display selected video URLs
+function displaySelectedUrls() {
+    const urlList = document.getElementById('urlList');
+    const selectedUrlsDiv = document.getElementById('selectedUrls');
+    
+    if (selectedVideoUrls.length === 0) {
+        urlList.style.display = 'none';
+        return;
+    }
+    
+    urlList.style.display = 'block';
+    
+    selectedUrlsDiv.innerHTML = selectedVideoUrls.map((url, index) => `
+        <div class="url-item">
+            <div class="url-text">${url}</div>
+            <button class="url-remove" onclick="removeVideoUrl(${index})">Remove</button>
+        </div>
+    `).join('');
+}
+
+// Remove video URL
+function removeVideoUrl(index) {
+    selectedVideoUrls.splice(index, 1);
+    displaySelectedUrls();
+}
+
+// Upload video URLs
+async function uploadVideoUrls() {
+    if (selectedVideoUrls.length === 0) {
+        CollegeClubApp.showAlert('No video URLs to add', 'error');
+        return;
+    }
+    
+    const uploadButton = document.getElementById('urlUploadButton');
+    uploadButton.innerHTML = '<span class="loading-spinner"></span> Adding Videos...';
+    uploadButton.disabled = true;
+    
+    try {
+        const response = await fetch(`${window.APP_CONFIG.API_BASE}/api/video-urls`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                clubId: currentClubId,
+                urls: selectedVideoUrls
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Add video URLs to club media
+            result.videos.forEach(videoData => {
+                ClubManager.addMediaToClub(currentClubId, videoData);
+            });
+            
+            // Refresh UI
+            currentClub = ClubManager.getClubById(currentClubId);
+            loadMediaGallery();
+            updateOverviewStats();
+            
+            CollegeClubApp.showAlert('Video URLs added successfully!', 'success');
+        } else {
+            throw new Error(result.message);
+        }
+    } catch (error) {
+        CollegeClubApp.showAlert('Failed to add video URLs: ' + error.message, 'error');
+    } finally {
+        // Reset form
+        selectedVideoUrls = [];
+        document.getElementById('urlList').style.display = 'none';
+        document.getElementById('videoUrlInput').value = '';
+        
+        // Reset button
+        uploadButton.innerHTML = 'Add Videos';
+        uploadButton.disabled = false;
+    }
+}
+
+// Generate embedded video HTML
+function getEmbeddedVideo(url) {
+    // Convert YouTube URLs to embed format
+    if (url.includes('youtube.com/watch?v=')) {
+        const videoId = url.split('v=')[1].split('&')[0];
+        return `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+    } else if (url.includes('youtu.be/')) {
+        const videoId = url.split('youtu.be/')[1].split('?')[0];
+        return `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+    } else if (url.includes('youtube.com/embed/')) {
+        return `<iframe src="${url}" frameborder="0" allowfullscreen></iframe>`;
+    }
+    // Convert Google Drive URLs to embed format
+    else if (url.includes('drive.google.com/file/d/')) {
+        const fileId = url.split('/file/d/')[1].split('/')[0];
+        return `<iframe src="https://drive.google.com/file/d/${fileId}/preview" frameborder="0" allowfullscreen></iframe>`;
+    }
+    
+    // Fallback for other URLs
+    return `<a href="${url}" target="_blank" rel="noopener">View Video</a>`;
 }
 
 // Add CSS for dashboard sections

@@ -254,17 +254,45 @@
                     <div class="card">
                         <div class="card-header">Upload Media</div>
                         <div class="card-body">
-                            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-                                <i>📁</i>
-                                <p>Click here to select files or drag and drop</p>
-                                <p style="font-size: 0.9rem; color: #666;">Supported formats: JPG, PNG, GIF, MP4, MOV (Max 10MB each)</p>
+                            <!-- Upload Method Tabs -->
+                            <div class="upload-tabs" style="margin-bottom: 1rem;">
+                                <button class="tab-btn active" onclick="switchUploadTab('files')" id="filesTab">📁 Upload Files</button>
+                                <button class="tab-btn" onclick="switchUploadTab('urls')" id="urlsTab">🔗 Add Video URLs</button>
                             </div>
-                            <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;" onchange="handleFileSelect(event)">
-                            
-                            <div id="fileList" class="file-list" style="display: none;">
-                                <h4>Selected Files:</h4>
-                                <div id="selectedFiles"></div>
-                                <button class="btn btn-primary" onclick="uploadFiles()" id="uploadButton">Upload Files</button>
+
+                            <!-- File Upload Tab -->
+                            <div id="fileUploadTab" class="upload-tab-content">
+                                <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                                    <i>📁</i>
+                                    <p>Click here to select images or drag and drop</p>
+                                    <p style="font-size: 0.9rem; color: #666;">Supported formats: JPG, PNG, GIF (Max 10MB each)</p>
+                                </div>
+                                <input type="file" id="fileInput" multiple accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+                                
+                                <div id="fileList" class="file-list" style="display: none;">
+                                    <h4>Selected Files:</h4>
+                                    <div id="selectedFiles"></div>
+                                    <button class="btn btn-primary" onclick="uploadFiles()" id="uploadButton">Upload Images</button>
+                                </div>
+                            </div>
+
+                            <!-- Video URL Tab -->
+                            <div id="urlUploadTab" class="upload-tab-content" style="display: none;">
+                                <div class="url-upload-area">
+                                    <h4>Add Video URLs</h4>
+                                    <p style="color: #666; margin-bottom: 1rem;">Paste YouTube or Google Drive video URLs</p>
+                                    
+                                    <div class="url-input-group">
+                                        <input type="url" id="videoUrlInput" placeholder="https://www.youtube.com/watch?v=... or https://drive.google.com/file/d/.../view" style="width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                                        <button class="btn btn-secondary" onclick="addVideoUrl()">Add Video</button>
+                                    </div>
+                                    
+                                    <div id="urlList" class="url-list" style="display: none;">
+                                        <h4>Video URLs to Add:</h4>
+                                        <div id="selectedUrls"></div>
+                                        <button class="btn btn-primary" onclick="uploadVideoUrls()" id="urlUploadButton">Add Videos</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -351,5 +379,102 @@
     <script src="/js/auth.js"></script>
     <script src="/js/clubs.js"></script>
     <script src="/js/club-dashboard.js"></script>
+    
+    <!-- Additional CSS for upload tabs -->
+    <style>
+        /* Upload Tabs */
+        .upload-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 1rem;
+        }
+        
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            border-bottom-color: #6366f1;
+            color: #6366f1;
+            font-weight: 600;
+        }
+        
+        .tab-btn:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .upload-tab-content {
+            min-height: 200px;
+        }
+        
+        .url-upload-area {
+            padding: 1rem;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .url-input-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .url-list {
+            margin-top: 1rem;
+            text-align: left;
+        }
+        
+        .url-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .url-item .url-text {
+            flex: 1;
+            margin-right: 1rem;
+            word-break: break-all;
+            font-size: 0.9rem;
+        }
+        
+        .url-item .url-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        /* Embedded Video Styles */
+        .video-embed {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .video-embed iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .status-embedded {
+            background-color: #17a2b8;
+            color: white;
+        }
+    </style>
 </body>
 </html>
