@@ -6,7 +6,7 @@ const config = {
             return 'http://localhost:3000';
         } else {
             // Production API URL - Railway backend
-            return 'https://campus-events-deployment-production-18a6.up.railway.app';
+            return 'campus-events-deployment-production-18a6.up.railway.app';
         }
     })(),
     
