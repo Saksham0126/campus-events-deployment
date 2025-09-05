@@ -198,4 +198,4 @@ kill -9 <PID>                 # Mac/Linux
 
 ---
 
-**Made with ❤️ by Saksham & Ankit**
+**Made with ❤️ by Saksham**
