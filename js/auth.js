@@ -564,7 +564,7 @@ function getCurrentSession() {
     if (!isLoggedIn()) return null;
     
     try {
-        return JSON.parse(localStorage.getItem('userSession'));
+        return JSON.parse(localStorage.getItem(STORAGE_KEYS.session));
     } catch (error) {
         return null;
     }
@@ -572,7 +572,7 @@ function getCurrentSession() {
 
 // Logout user
 function logout() {
-    localStorage.removeItem('userSession');
+    localStorage.removeItem(STORAGE_KEYS.session);
     showAlert('Logged out successfully', 'success');
     
     setTimeout(() => {
