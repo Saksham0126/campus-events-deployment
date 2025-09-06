@@ -211,7 +211,7 @@ function clearAdminForm() {
 
 // Check user session
 function checkUserSession() {
-    const userSession = localStorage.getItem('userSession');
+    const userSession = localStorage.getItem('gmail_users');
     if (userSession) {
         const session = JSON.parse(userSession);
         
@@ -229,7 +229,7 @@ function checkUserSession() {
             // If on main page, just show a welcome message or update UI
         } else {
             // Clear expired session
-            localStorage.removeItem('userSession');
+            localStorage.removeItem('gmail_users');
         }
     }
 }

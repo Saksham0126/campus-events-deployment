@@ -547,14 +547,14 @@ function handleForgotPassword(event) {
 
 // Check if user is logged in
 function isLoggedIn() {
-    const session = localStorage.getItem('userSession');
+    const session = localStorage.getItem(STORAGE_KEYS.session);
     if (!session) return false;
     
     try {
         const sessionData = JSON.parse(session);
         return sessionData.expires > Date.now();
     } catch (error) {
-        localStorage.removeItem('userSession');
+        localStorage.removeItem(STORAGE_KEYS.session);
         return false;
     }
 }
