@@ -193,12 +193,20 @@ async function loadClubs() {
     // Load real media for each club (only if backend is available)
     const clubsWithMedia = await Promise.all(clubs.map(async (club) => {
         try {
-            const response = await fetch(`${window.APP_CONFIG.API_BASE}/api/club/${club.id}/media`);
+            // Add cache busting parameter
+            const cacheBuster = `?v=${Date.now()}`;
+            const response = await fetch(`${window.APP_CONFIG.API_BASE}/api/club/${club.id}/media${cacheBuster}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
             const result = await response.json();
+            console.log(`✅ Successfully loaded media for ${club.id}:`, result.media?.length || 0, 'items');
             return { ...club, media: result.media };
         } catch (error) {
             // If backend is not available, use the media stored in localStorage
-            console.log(`Backend not available, using local data for club ${club.id}`);
+            console.log(`❌ Backend not available for ${club.id}:`, error.message);
             return { ...club, media: club.media || [] };
         }
     }));

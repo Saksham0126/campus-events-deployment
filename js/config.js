@@ -10,6 +10,9 @@ const config = {
         }
     })(),
     
+    // Cache busting version
+    VERSION: '1.0.1',
+    
     // File upload settings
     MAX_FILE_SIZE: 100 * 1024 * 1024, // 100MB
     ALLOWED_FILE_TYPES: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/webm'],
@@ -29,6 +32,12 @@ const config = {
 // Log configuration in debug mode
 if (config.DEBUG) {
     console.log('🔧 App Configuration:', config);
+}
+
+// Force cache refresh for production
+if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    console.log('🚀 Production mode - API Base:', config.API_BASE);
+    console.log('📦 Config Version:', config.VERSION);
 }
 
 // Export for use in other modules
