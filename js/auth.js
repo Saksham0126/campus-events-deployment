@@ -339,7 +339,7 @@ function handleLogin(event) {
 }
 
 // Handle signup
-function handleSignup(event) {
+async function handleSignup(event) {
     event.preventDefault();
     
     const formData = new FormData(event.target);
@@ -649,7 +649,7 @@ function changeClubPassword(clubId, currentPassword, newPassword) {
 }
 
 // Register new club (admin only)
-function registerClub(clubData, password) {
+async function registerClub(clubData, password) {
     if (!isAdmin()) {
         throw new Error('Only admins can register new clubs');
     }
