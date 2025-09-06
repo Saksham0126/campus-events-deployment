@@ -302,19 +302,52 @@ function getAllClubs() {
 }
 
 // Add new club (for admin use)
-function addClub(clubData) {
-    const clubs = getAllClubs();
-    const newClub = {
-        id: generateId(),
-        ...clubData,
-        media: [],
-        status: 'pending' // New clubs need admin approval
-    };
-    
-    clubs.push(newClub);
-    setLocalStorage('clubs', clubs);
-    
-    return newClub;
+async function addClub(clubData) {
+    try {
+        // First, try to add to backend
+        const response = await fetch(`${window.APP_CONFIG.API_BASE}/api/clubs`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ...clubData,
+                media: [],
+                status: 'pending' // New clubs need admin approval
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        console.log('✅ Club created on backend:', result.club);
+        
+        // Also add to localStorage for offline support
+        const clubs = getAllClubs();
+        clubs.push(result.club);
+        setLocalStorage('clubs', clubs);
+        
+        return result.club;
+        
+    } catch (error) {
+        console.log('❌ Backend not available, saving locally:', error.message);
+        
+        // Fallback to localStorage only
+        const clubs = getAllClubs();
+        const newClub = {
+            id: generateId(),
+            ...clubData,
+            media: [],
+            status: 'pending' // New clubs need admin approval
+        };
+        
+        clubs.push(newClub);
+        setLocalStorage('clubs', clubs);
+        
+        return newClub;
+    }
 }
 
 // Update club data

@@ -209,6 +209,35 @@ app.get('/api/clubs', (req, res) => {
     }
 });
 
+// Create new club
+app.post('/api/clubs', (req, res) => {
+    try {
+        const clubData = req.body;
+        
+        // Generate unique ID
+        const clubId = `club-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        
+        const newClub = {
+            id: clubId,
+            ...clubData,
+            media: clubData.media || [],
+            status: clubData.status || 'pending',
+            createdAt: new Date().toISOString()
+        };
+        
+        // Add to clubs array
+        clubs.push(newClub);
+        
+        res.status(201).json({ 
+            success: true, 
+            message: 'Club created successfully',
+            club: newClub 
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 // Get club by ID
 app.get('/api/club/:clubId', (req, res) => {
     try {

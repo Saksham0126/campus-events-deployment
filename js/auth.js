@@ -443,7 +443,7 @@ function handleSignup(event) {
                 };
                 
                 try {
-                    window.ClubManager.addClub(clubData);
+                    await window.ClubManager.addClub(clubData);
                     console.log('Club created:', clubData);
                 } catch (error) {
                     console.error('Error creating club:', error);
@@ -669,7 +669,7 @@ function registerClub(clubData, password) {
         registrationDate: new Date().toISOString()
     };
     
-    ClubManager.addClub(club);
+    await ClubManager.addClub(club);
     
     return { clubId, password };
 }
