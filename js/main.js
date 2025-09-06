@@ -29,8 +29,8 @@ async function initializeApp() {
     // Set up modal event listeners
     setupModalEvents();
     
-    // Check for existing session (disabled for now to prevent redirect conflicts)
-    // checkUserSession();
+    // Check for existing session
+    checkUserSession();
     
     // Start carousel auto-play
     startCarouselAutoPlay();
@@ -211,26 +211,49 @@ function clearAdminForm() {
 
 // Check user session
 function checkUserSession() {
-    const userSession = localStorage.getItem('gmail_users');
+    console.log('🔍 Checking user session...');
+    const userSession = localStorage.getItem('userSession');
+    console.log('📦 Session data:', userSession);
+    
     if (userSession) {
-        const session = JSON.parse(userSession);
-        
-        // Check if session is still valid
-        if (session.expires > Date.now()) {
-            // Only auto-redirect if we're on a dashboard page, not the main page
-            const currentPath = window.location.pathname;
-            if (currentPath.includes('/pages/') || currentPath.includes('dashboard')) {
-                if (session.type === 'club') {
-                    redirectToClubDashboard(session.clubId);
-                } else if (session.type === 'admin') {
-                    redirectToAdminDashboard();
+        try {
+            const session = JSON.parse(userSession);
+            console.log('👤 Parsed session:', session);
+            
+            // Check if session is still valid
+            const isExpired = session.expires <= Date.now();
+            console.log('⏰ Session expired:', isExpired, 'Expires:', new Date(session.expires));
+            
+            if (!isExpired) {
+                console.log('✅ Valid session found, type:', session.type);
+                
+                // Auto-redirect if we're on the main page and have a valid session
+                const currentPath = window.location.pathname;
+                const isMainPage = currentPath === '/' || currentPath.endsWith('index.html') || currentPath.endsWith('/');
+                
+                console.log('📍 Current path:', currentPath, 'Is main page:', isMainPage);
+                
+                if (isMainPage) {
+                    console.log('🚀 Auto-redirecting from main page...');
+                    if (session.type === 'club') {
+                        console.log('🏛️ Redirecting to club dashboard:', session.clubId);
+                        redirectToClubDashboard(session.clubId);
+                    } else if (session.type === 'admin') {
+                        console.log('👑 Redirecting to admin dashboard');
+                        redirectToAdminDashboard();
+                    }
                 }
+            } else {
+                console.log('❌ Session expired, clearing...');
+                // Clear expired session
+                localStorage.removeItem('userSession');
             }
-            // If on main page, just show a welcome message or update UI
-        } else {
-            // Clear expired session
-            localStorage.removeItem('gmail_users');
+        } catch (error) {
+            console.error('❌ Error parsing session:', error);
+            localStorage.removeItem('userSession');
         }
+    } else {
+        console.log('❌ No session found');
     }
 }
 
