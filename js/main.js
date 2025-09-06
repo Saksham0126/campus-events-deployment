@@ -29,11 +29,8 @@ async function initializeApp() {
     // Set up modal event listeners
     setupModalEvents();
     
-    // Check for URL parameters for auto-login
-    checkUrlParameters();
-    
-    // Check for existing session
-    checkUserSession();
+    // Check for existing session (disabled for now to prevent redirect conflicts)
+    // checkUserSession();
     
     // Start carousel auto-play
     startCarouselAutoPlay();
@@ -212,45 +209,9 @@ function clearAdminForm() {
     document.getElementById('adminPassword').value = '';
 }
 
-// Check URL parameters for auto-login
-function checkUrlParameters() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const email = urlParams.get('email');
-    const password = urlParams.get('password');
-    
-    if (email && password) {
-        console.log('Auto-login detected:', { email });
-        
-        // Decode URL-encoded characters
-        const decodedEmail = decodeURIComponent(email);
-        const decodedPassword = decodeURIComponent(password);
-        
-        // Auto-fill login form and submit
-        const emailInput = document.getElementById('loginEmail');
-        const passwordInput = document.getElementById('loginPassword');
-        
-        if (emailInput && passwordInput) {
-            emailInput.value = decodedEmail;
-            passwordInput.value = decodedPassword;
-            
-            // Show login modal
-            showLogin();
-            
-            // Auto-submit after a short delay
-            setTimeout(() => {
-                const loginForm = document.getElementById('loginForm');
-                if (loginForm) {
-                    console.log('Auto-submitting login form');
-                    loginForm.dispatchEvent(new Event('submit'));
-                }
-            }, 500);
-        }
-    }
-}
-
 // Check user session
 function checkUserSession() {
-    const userSession = localStorage.getItem('userSession');
+    const userSession = localStorage.getItem('gmail_users');
     if (userSession) {
         const session = JSON.parse(userSession);
         
@@ -268,7 +229,7 @@ function checkUserSession() {
             // If on main page, just show a welcome message or update UI
         } else {
             // Clear expired session
-            localStorage.removeItem('userSession');
+            localStorage.removeItem('gmail_users');
         }
     }
 }
