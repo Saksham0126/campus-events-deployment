@@ -1084,6 +1084,7 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Make functions globally available
+window.showSection = showSection;
 window.showSuperAdminPanel = showSuperAdminPanel;
 window.confirmDestroyDatabase = confirmDestroyDatabase;
 window.executeDestroy = executeDestroy;

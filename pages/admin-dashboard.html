@@ -503,9 +503,47 @@
     </div>
 
     <!-- Scripts -->
+    <script src="../js/config.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/clubs.js"></script>
     <script src="../js/admin-dashboard.js"></script>
+    
+    <!-- Fallback function in case scripts don't load -->
+    <script>
+        // Fallback showSection function
+        if (typeof showSection === 'undefined') {
+            function showSection(sectionId) {
+                console.log('Fallback showSection called with:', sectionId);
+                // Hide all sections
+                document.querySelectorAll('.dashboard-section').forEach(section => {
+                    section.classList.remove('active');
+                    section.style.display = 'none';
+                });
+                
+                // Remove active class from all nav links
+                document.querySelectorAll('.sidebar-menu .nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                
+                // Show selected section
+                const targetSection = document.getElementById(sectionId);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    targetSection.style.display = 'block';
+                }
+                
+                // Add active class to clicked nav link
+                const activeLink = document.querySelector(`[onclick="showSection('${sectionId}')"]`);
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                }
+            }
+            
+            // Make it globally available
+            window.showSection = showSection;
+            console.log('Fallback showSection function created');
+        }
+    </script>
 </body>
 </html>
