@@ -18,12 +18,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Initialize dashboard
 function initializeDashboard() {
+    console.log('🔍 Admin Dashboard - Checking session...');
     const session = getCurrentSession();
+    console.log('🔍 Admin Dashboard - Session:', session);
     
     if (!session) {
+        console.log('❌ Admin Dashboard - No session found, redirecting to home');
         window.location.href = '../index.html';
         return;
     }
+    
+    console.log('✅ Admin Dashboard - Session found, continuing...');
     
     // Set admin name
     const adminNameEl = document.getElementById('adminName');
