@@ -152,7 +152,7 @@ function submitAddClub(event) {
         founded: new Date().getFullYear().toString()
     };
     try {
-        const created = await ClubManager.addClub(clubData);
+        const created = ClubManager.addClub(clubData);
         showAlert(`Club "${created.name}" added. Awaiting approval.`, 'success');
         closeModal('addClubModal');
         form.reset();
