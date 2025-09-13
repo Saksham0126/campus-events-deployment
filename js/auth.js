@@ -451,8 +451,10 @@ async function handleSignup(event) {
                 };
                 
                 try {
-                    await window.ClubManager.addClub(clubData);
-                    console.log('Club created:', clubData);
+                    if (window.ClubManager && window.ClubManager.addClub) {
+                        window.ClubManager.addClub(clubData);
+                        console.log('Club created:', clubData);
+                    }
                 } catch (error) {
                     console.error('Error creating club:', error);
                 }
