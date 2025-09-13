@@ -1432,3 +1432,16 @@ body::before {
 .btn-refresh span {
     font-size: 1rem;
 }
+
+/* Image placeholder fallback */
+.image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #2a2a2a;
+    color: #888;
+    font-size: 2rem;
+    min-height: 200px;
+    border-radius: 8px;
+    border: 2px dashed #444;
+}

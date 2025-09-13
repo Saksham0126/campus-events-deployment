@@ -332,6 +332,20 @@ function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
+// Handle image loading errors to prevent infinite loops
+function handleImageError(img) {
+    // Check if this is already a placeholder image to prevent infinite loops
+    if (img.src.includes('club-placeholder.jpg') || img.src.includes('placeholder')) {
+        // If it's already a placeholder and failed, show a fallback
+        img.style.display = 'none';
+        img.parentNode.innerHTML = '<div class="image-placeholder">📷 Image unavailable</div>';
+        return;
+    }
+    
+    // Set to placeholder image
+    img.src = 'images/placeholders/club-placeholder.jpg';
+}
+
 // Debounce function for search
 function debounce(func, wait) {
     let timeout;
@@ -519,6 +533,11 @@ function updateIndicators() {
 function startCarouselAutoPlay() {
     if (carouselItems.length <= 1) return;
     
+    // Clear any existing interval to prevent multiple intervals
+    if (carouselAutoPlay) {
+        clearInterval(carouselAutoPlay);
+    }
+    
     carouselAutoPlay = setInterval(() => {
         nextHeroSlide();
     }, 6000); // Change slide every 6 seconds
@@ -640,3 +659,4 @@ window.CollegeClubApp = {
 // Make localStorage functions globally available for other scripts
 window.getLocalStorage = getLocalStorage;
 window.setLocalStorage = setLocalStorage;
+window.handleImageError = handleImageError;

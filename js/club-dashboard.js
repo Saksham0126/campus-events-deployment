@@ -187,7 +187,7 @@ function loadMediaGallery() {
         if (media.type === 'image') {
             // Cloudinary URLs are already absolute
             const mediaUrl = media.url;
-            mediaElement = `<img src="${mediaUrl}" alt="${media.caption || 'Club media'}" loading="lazy" onerror="this.src='../images/placeholders/club-placeholder.jpg'" />`;
+            mediaElement = `<img src="${mediaUrl}" alt="${media.caption || 'Club media'}" loading="lazy" onerror="handleImageError(this)" />`;
         } else if (media.type === 'video') {
             if (media.isEmbedded) {
                 // Embedded video (YouTube/Google Drive)

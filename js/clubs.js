@@ -245,7 +245,7 @@ function createClubCard(club) {
             <div class="club-card-image">
                 ${src
                     ? (featuredMedia.type === 'image'
-                        ? `<img src="${src}" alt="${club.name}" loading="lazy" decoding="async" onerror="this.src='images/placeholders/club-placeholder.jpg'">`
+                        ? `<img src="${src}" alt="${club.name}" loading="lazy" decoding="async" onerror="handleImageError(this)">`
                         : `<video src="${src}" muted preload="metadata" autoplay loop></video>`)
                     : club.logo}
             </div>

@@ -522,7 +522,7 @@ function loadPendingMedia() {
         <div class="media-approval-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
             ${pendingMedia.map(media => {
                 const mediaElement = media.type === 'image' 
-                    ? `<img src="${media.url}" alt="${media.caption}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;" onerror="this.src='../images/placeholder.jpg'">`
+                    ? `<img src="${media.url}" alt="${media.caption}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;" onerror="handleImageError(this)">`
                     : `<video src="${media.url}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;" controls></video>`;
                     
                 return `
