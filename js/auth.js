@@ -167,12 +167,17 @@ function onSignupEmailInput() {
 
 // Handle login
 function handleLogin(event) {
+    console.log('🔐 FUNCTION CALLED - handleLogin');
     event.preventDefault();
+    console.log('🔐 Login attempt started');
+    console.log('🔐 Event:', event);
     
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
     
-    console.log('Login attempt:', { email });
+    console.log('🔐 Email:', email);
+    console.log('🔐 Password length:', password ? password.length : 'null');
+    console.log('🔐 Login attempt:', { email });
     
     // Validate inputs
     if (!email || !password) {
