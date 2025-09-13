@@ -112,14 +112,9 @@ const SAMPLE_CLUBS = [
             {
                 id: 'music-1',
                 type: 'image',
-                url: 'images/music-club-1.jpg',
-                caption: 'Annual Concert'
-            },
-            {
-                id: 'music-2',
-                type: 'video',
-                url: 'videos/music-club-performance.mp4',
-                caption: 'Live Performance'
+                url: 'https://picsum.photos/800/500?random=7',
+                caption: 'Annual Concert',
+                uploadDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
             }
         ],
         status: 'active'
@@ -141,8 +136,9 @@ const SAMPLE_CLUBS = [
             {
                 id: 'debate-1',
                 type: 'image',
-                url: 'images/debate-club-1.jpg',
-                caption: 'National Debate Competition'
+                url: 'https://picsum.photos/800/500?random=8',
+                caption: 'National Debate Competition',
+                uploadDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
             }
         ],
         status: 'active'
@@ -164,14 +160,16 @@ const SAMPLE_CLUBS = [
             {
                 id: 'photo-1',
                 type: 'image',
-                url: 'images/photography-club-1.jpg',
-                caption: 'Campus Photography Exhibition'
+                url: 'https://picsum.photos/800/500?random=9',
+                caption: 'Campus Photography Exhibition',
+                uploadDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
             },
             {
                 id: 'photo-2',
                 type: 'image',
-                url: 'images/photography-club-2.jpg',
-                caption: 'Nature Photography Workshop'
+                url: 'https://picsum.photos/800/500?random=10',
+                caption: 'Nature Photography Workshop',
+                uploadDate: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString()
             }
         ],
         status: 'active'
