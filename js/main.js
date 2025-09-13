@@ -219,6 +219,8 @@ function checkUserSession() {
         try {
             const session = JSON.parse(userSession);
             console.log('👤 Parsed session:', session);
+            console.log('👤 Session type:', session.type);
+            console.log('👤 Session role:', session.role);
             
             // Check if session is still valid
             const isExpired = session.expires <= Date.now();
@@ -241,6 +243,8 @@ function checkUserSession() {
                     } else if (session.type === 'admin') {
                         console.log('👑 Redirecting to admin dashboard');
                         redirectToAdminDashboard();
+                    } else {
+                        console.log('❓ Unknown session type:', session.type);
                     }
                 }
             } else {

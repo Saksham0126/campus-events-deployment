@@ -317,9 +317,12 @@ function handleLogin(event) {
             
             // Redirect based on user role (auto-detected)
             setTimeout(() => {
+                console.log('🔄 Auth redirect - User role:', user.role);
                 if (user.role === 'admin') {
+                    console.log('🔄 Auth redirect - Going to admin dashboard');
                     redirectToAdminDashboard();
                 } else {
+                    console.log('🔄 Auth redirect - Going to club dashboard:', user.clubId);
                     redirectToClubDashboard(user.clubId);
                 }
             }, 1500);
